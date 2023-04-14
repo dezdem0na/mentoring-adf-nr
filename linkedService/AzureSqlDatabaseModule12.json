@@ -1,0 +1,12 @@
+{
+	"name": "AzureSqlDatabaseModule12",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "AzureSqlDatabase",
+		"typeProperties": {
+			"connectionString": "integrated security=False;encrypt=True;connection timeout=30;data source=azure-mentoring-nr.database.windows.net;initial catalog=DataMart;user id=sqladm",
+			"encryptedCredential": "ew0KICAiVmVyc2lvbiI6ICIyMDE3LTExLTMwIiwNCiAgIlByb3RlY3Rpb25Nb2RlIjogIktleSIsDQogICJTZWNyZXRDb250ZW50VHlwZSI6ICJQbGFpbnRleHQiLA0KICAiQ3JlZGVudGlhbElkIjogIkRBVEFGQUNUT1JZQDMwNTM0NDI2LUNBNUUtNEI5Ri1CNUJDLUFFQjJGMkExRThGMV80ODc4ODhiOC00NTU2LTRiNmMtYjQ2OS04ZWM5ODg2NDYwZDkiDQp9"
+		}
+	}
+}
