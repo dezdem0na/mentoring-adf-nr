@@ -1,0 +1,25 @@
+{
+	"name": "DS_SQL_Movies_MultiTable",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_SQL_Movies",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"sourceFileName": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "stg",
+			"table": {
+				"value": "@dataset().sourceFileName",
+				"type": "Expression"
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

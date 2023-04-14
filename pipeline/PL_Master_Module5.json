@@ -1,0 +1,66 @@
+{
+	"name": "PL_Master_Module5",
+	"properties": {
+		"activities": [
+			{
+				"name": "To_Stage",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "PL_BLOB_To_ADLS",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "To_DB",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "To_Stage",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "PL_DATA_DS_BLOB_Movies_To_DS_SQL_Movies",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "To_Archive",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "To_DB",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "PL_To_Archive_Module5",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			}
+		],
+		"folder": {
+			"name": "Module5"
+		},
+		"annotations": [],
+		"lastPublishTime": "2023-04-14T13:20:04Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

@@ -1,0 +1,93 @@
+{
+	"name": "ASQL_tLogs",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_SQL_Movies",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "pipelineName",
+				"type": "nvarchar"
+			},
+			{
+				"name": "runId",
+				"type": "nvarchar"
+			},
+			{
+				"name": "meterType",
+				"type": "nvarchar"
+			},
+			{
+				"name": "duration",
+				"type": "datetimeoffset",
+				"scale": 7
+			},
+			{
+				"name": "billingUnit",
+				"type": "nvarchar"
+			},
+			{
+				"name": "procFilesNum",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "readRowsNum",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "copiedRowsNum",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "usedDIU",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "parallelCopiesValue",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "startTime",
+				"type": "datetime2",
+				"scale": 7
+			},
+			{
+				"name": "endTime",
+				"type": "datetime2",
+				"scale": 7
+			},
+			{
+				"name": "status",
+				"type": "nvarchar"
+			},
+			{
+				"name": "queueDuration",
+				"type": "datetimeoffset",
+				"scale": 7
+			},
+			{
+				"name": "transferDuration",
+				"type": "datetimeoffset",
+				"scale": 7
+			},
+			{
+				"name": "copyDuration",
+				"type": "datetimeoffset",
+				"scale": 7
+			}
+		],
+		"typeProperties": {
+			"schema": "etl",
+			"table": "tLogs"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

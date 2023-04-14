@@ -1,0 +1,45 @@
+{
+	"name": "PL_Logic_App0",
+	"properties": {
+		"activities": [
+			{
+				"name": "Web1",
+				"type": "WebActivity",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": "https://prod-15.francecentral.logic.azure.com:443/workflows/991618c20b864c05b5f3fd3e497c0d96/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=GOUjOmrJEOxxJhBtO6AoGJOKHZMdgrS3mTPI3TVlHwE",
+					"method": "POST",
+					"body": {
+						"value": "{\n    \"message\" : \"This is a custom dynamic message from your ADF  @{pipeline().DataFactory}, pipeline with run ID @{pipeline().RunId}.\",\n    \"dataFactoryName\" : \"@{pipeline().DataFactory}\", \n    \"pipelineName\" : \"@{pipeline().Pipeline}\", \n    \"receiver\" : \"@{pipeline().parameters.receiver}\"\n}",
+						"type": "Expression"
+					}
+				}
+			}
+		],
+		"parameters": {
+			"receiver": {
+				"type": "string",
+				"defaultValue": "sigma.beex@gmail.com"
+			}
+		},
+		"variables": {
+			"url": {
+				"type": "String"
+			}
+		},
+		"folder": {
+			"name": "Module11"
+		},
+		"annotations": [],
+		"lastPublishTime": "2023-04-14T13:20:01Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

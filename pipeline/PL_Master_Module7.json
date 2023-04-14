@@ -1,0 +1,66 @@
+{
+	"name": "PL_Master_Module7",
+	"properties": {
+		"activities": [
+			{
+				"name": "ToStage",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "PL_DELTA_COPY_Online_Blob_To_ADLS",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "ToDB",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "ToStage",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "PL_Online_ADLS_To_DB_Stg",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "ToArchive",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "ToDB",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "PL_Archive_Module7",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			}
+		],
+		"folder": {
+			"name": "Module7"
+		},
+		"annotations": [],
+		"lastPublishTime": "2023-04-14T13:20:04Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

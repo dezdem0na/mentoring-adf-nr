@@ -1,0 +1,33 @@
+{
+	"name": "ASQL_Movies_DB",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_SQL_Movies",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"tableName": {
+				"type": "string",
+				"defaultValue": "movies_metadata"
+			},
+			"schemaName": {
+				"type": "string",
+				"defaultValue": "stg"
+			}
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": {
+				"value": "@dataset().schemaName",
+				"type": "Expression"
+			},
+			"table": {
+				"value": "@dataset().tableName",
+				"type": "Expression"
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}
