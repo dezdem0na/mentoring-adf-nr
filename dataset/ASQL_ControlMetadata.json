@@ -1,0 +1,39 @@
+{
+	"name": "ASQL_ControlMetadata",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_SQL_Movies",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "pathToSourceFiles",
+				"type": "nvarchar"
+			},
+			{
+				"name": "sourceFileProperties",
+				"type": "nvarchar"
+			},
+			{
+				"name": "destinationTable",
+				"type": "nvarchar"
+			},
+			{
+				"name": "DIU",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Mapping",
+				"type": "nvarchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "etl",
+			"table": "tControlMetadata"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

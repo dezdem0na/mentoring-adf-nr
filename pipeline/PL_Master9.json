@@ -1,0 +1,518 @@
+{
+	"name": "PL_Master9",
+	"properties": {
+		"activities": [
+			{
+				"name": "WebGetUrlFromSecret",
+				"type": "WebActivity",
+				"dependsOn": [
+					{
+						"activity": "SetFailed",
+						"dependencyConditions": [
+							"Succeeded",
+							"Skipped"
+						]
+					},
+					{
+						"activity": "ForEach1",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": {
+						"value": "@pipeline().globalParameters.uri_global_secret",
+						"type": "Expression"
+					},
+					"method": "GET",
+					"authentication": {
+						"type": "MSI",
+						"resource": "https://vault.azure.net"
+					}
+				}
+			},
+			{
+				"name": "WebPost",
+				"type": "WebActivity",
+				"dependsOn": [
+					{
+						"activity": "SetPostUrl",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": {
+						"value": "@variables('uri_post')",
+						"type": "Expression"
+					},
+					"method": "POST",
+					"body": {
+						"value": "{\n    \"message\" : \"This is a custom dynamic message from your data factory @{pipeline().DataFactory} pipeline with run ID @{pipeline().RunId}. @{variables('errorMsg')}\",\n    \"pipelineStatus\" : \"@{variables('pipelineStatus')}\", \n    \"pipelineName\" : \"@{pipeline().Pipeline}\", \n    \"receiver\" : \"@{variables('reciever')}\"\n   }",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "SetPostUrl",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "WebGetUrlFromSecret",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "uri_post",
+					"value": {
+						"value": "@activity('WebGetUrlFromSecret').output.value",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "SetFailed",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "ForEach1",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "pipelineStatus",
+					"value": "Failed"
+				}
+			},
+			{
+				"name": "ForEach1",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "Lookup1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('Lookup1').output.value",
+						"type": "Expression"
+					},
+					"isSequential": true,
+					"activities": [
+						{
+							"name": "Copy",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "DelimitedTextSource",
+									"additionalColumns": [
+										{
+											"name": "source_filename",
+											"value": "$$FILEPATH"
+										},
+										{
+											"name": "pipelineId",
+											"value": {
+												"value": "@pipeline().RunId",
+												"type": "Expression"
+											}
+										}
+									],
+									"storeSettings": {
+										"type": "AzureBlobFSReadSettings",
+										"recursive": false,
+										"wildcardFolderPath": {
+											"value": "@item().folder",
+											"type": "Expression"
+										},
+										"wildcardFileName": {
+											"value": "@{item().fileName}*",
+											"type": "Expression"
+										},
+										"enablePartitionDiscovery": false
+									},
+									"formatSettings": {
+										"type": "DelimitedTextReadSettings"
+									}
+								},
+								"sink": {
+									"type": "AzureSqlSink",
+									"preCopyScript": {
+										"value": "TRUNCATE TABLE @{item().destinationSchemaName}.@{item().destinationTableName}",
+										"type": "Expression"
+									},
+									"writeBehavior": "insert",
+									"sqlWriterUseTableLock": false,
+									"disableMetricsCollection": false
+								},
+								"enableStaging": false,
+								"dataIntegrationUnits": {
+									"value": "@item().DIU",
+									"type": "Expression"
+								},
+								"translator": {
+									"value": "@json(item().Mapping)",
+									"type": "Expression"
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "ADSL_RawMetadataDriven",
+									"type": "DatasetReference",
+									"parameters": {
+										"columnDelimiter": "@item().columnDelimiter",
+										"encoding": "@item().encoding",
+										"escapeCharacter": "@item().escapeCharacter",
+										"quoteCharacter": "@item().quoteCharacter",
+										"container": "@item().container",
+										"folder": "@item().folder",
+										"fileName": {
+											"value": "@item().fileName",
+											"type": "Expression"
+										}
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "ASQL_Movies_DB",
+									"type": "DatasetReference",
+									"parameters": {
+										"tableName": {
+											"value": "@item().destinationTableName",
+											"type": "Expression"
+										},
+										"schemaName": {
+											"value": "@item().destinationSchemaName",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						},
+						{
+							"name": "spCopyAactivitiyLog",
+							"type": "SqlServerStoredProcedure",
+							"dependsOn": [
+								{
+									"activity": "Copy",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"storedProcedureName": "[etl].[sp_write_log]",
+								"storedProcedureParameters": {
+									"billingUnit": {
+										"value": {
+											"value": "@activity('Copy').output.billingReference.billableDuration[0].unit",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"copiedRowsNum": {
+										"value": {
+											"value": "@activity('Copy').output.rowsCopied",
+											"type": "Expression"
+										},
+										"type": "Int32"
+									},
+									"copyDuration": {
+										"value": {
+											"value": "@activity('Copy').output.copyDuration",
+											"type": "Expression"
+										},
+										"type": "Int32"
+									},
+									"billingDuration": {
+										"value": {
+											"value": "@activity('Copy').output.billingReference.billableDuration[0].duration",
+											"type": "Expression"
+										},
+										"type": "Decimal"
+									},
+									"endTime": {
+										"value": {
+											"value": "@addSeconds(activity('Copy').output.executionDetails[0].start,activity('Copy').output.executionDetails[0].duration)",
+											"type": "Expression"
+										},
+										"type": "DateTime"
+									},
+									"meterType": {
+										"value": {
+											"value": "@activity('Copy').output.billingReference.billableDuration[0].meterType",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"parallelCopiesValue": {
+										"value": {
+											"value": "@activity('Copy').output.usedParallelCopies",
+											"type": "Expression"
+										},
+										"type": "Int32"
+									},
+									"pipelineName": {
+										"value": {
+											"value": "@pipeline().Pipeline",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"procFilesNum": {
+										"value": {
+											"value": "@activity('Copy').output.filesRead",
+											"type": "Expression"
+										},
+										"type": "Int32"
+									},
+									"queueDuration": {
+										"value": {
+											"value": "@activity('Copy').output.executionDetails[0].detailedDurations.queuingDuration",
+											"type": "Expression"
+										},
+										"type": "Int32"
+									},
+									"readRowsNum": {
+										"value": {
+											"value": "@activity('Copy').output.rowsRead",
+											"type": "Expression"
+										},
+										"type": "Int32"
+									},
+									"runId": {
+										"value": {
+											"value": "@pipeline().RunId",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"startTime": {
+										"value": {
+											"value": "@activity('Copy').output.executionDetails[0].start",
+											"type": "Expression"
+										},
+										"type": "DateTime"
+									},
+									"status": {
+										"value": {
+											"value": "@activity('Copy').output.executionDetails[0].status",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"transferDuration": {
+										"value": {
+											"value": "@activity('Copy').output.executionDetails[0].detailedDurations.transferDuration",
+											"type": "Expression"
+										},
+										"type": "Int32"
+									},
+									"usedDIU": {
+										"value": {
+											"value": "@activity('Copy').output.usedDataIntegrationUnits",
+											"type": "Expression"
+										},
+										"type": "Int32"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "LS_SQL_Movies",
+								"type": "LinkedServiceReference"
+							}
+						},
+						{
+							"name": "spGetError",
+							"type": "SqlServerStoredProcedure",
+							"dependsOn": [
+								{
+									"activity": "Copy",
+									"dependencyConditions": [
+										"Failed"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"storedProcedureName": "[etl].[sp_write_error]",
+								"storedProcedureParameters": {
+									"activityName": {
+										"value": "Copy",
+										"type": "String"
+									},
+									"datetime": {
+										"value": {
+											"value": "@utcnow()",
+											"type": "Expression"
+										},
+										"type": "DateTime"
+									},
+									"errorCode": {
+										"value": {
+											"value": "@activity('Copy').output.errors[0].Code",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"errorMessage": {
+										"value": {
+											"value": "@activity('Copy').output.errors[0].Message",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"failureType": {
+										"value": {
+											"value": "@activity('Copy').output.errors[0].Category",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"pipelineName": {
+										"value": {
+											"value": "@pipeline().Pipeline",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"runID": {
+										"value": {
+											"value": "@pipeline().RunId",
+											"type": "Expression"
+										},
+										"type": "String"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "LS_SQL_Movies",
+								"type": "LinkedServiceReference"
+							}
+						},
+						{
+							"name": "SetErrorMsg",
+							"type": "SetVariable",
+							"dependsOn": [
+								{
+									"activity": "spGetError",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "errorMsg",
+								"value": {
+									"value": "@{activity('Copy').output.errors[0].Message}",
+									"type": "Expression"
+								}
+							}
+						}
+					]
+				}
+			},
+			{
+				"name": "Lookup1",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "ASQL_ControlMetadata",
+						"type": "DatasetReference"
+					},
+					"firstRowOnly": false
+				}
+			}
+		],
+		"variables": {
+			"uri_post": {
+				"type": "String"
+			},
+			"pipelineStatus": {
+				"type": "String",
+				"defaultValue": "Succeded"
+			},
+			"reciever": {
+				"type": "String",
+				"defaultValue": "sigma.beex@gmail.com"
+			},
+			"errorMsg": {
+				"type": "String"
+			}
+		},
+		"folder": {
+			"name": "Module9"
+		},
+		"annotations": [],
+		"lastPublishTime": "2023-04-14T13:20:03Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

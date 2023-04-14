@@ -1,0 +1,22 @@
+{
+	"name": "DS_BLOB_Online_Source",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_BLOB_Online",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"container": "online"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"quoteChar": "\""
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

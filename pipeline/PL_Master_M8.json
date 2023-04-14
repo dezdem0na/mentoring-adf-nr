@@ -1,0 +1,46 @@
+{
+	"name": "PL_Master_M8",
+	"properties": {
+		"activities": [
+			{
+				"name": "Dim",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "PL_Pop_Dim_Tables",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "Fact",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Dim",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "PL_Pop_Fact_Tables",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			}
+		],
+		"folder": {
+			"name": "Module8"
+		},
+		"annotations": [],
+		"lastPublishTime": "2023-04-14T13:20:05Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}
