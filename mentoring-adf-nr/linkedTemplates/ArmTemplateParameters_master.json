@@ -5,6 +5,9 @@
 		"factoryName": {
 			"value": "mentoring-adf-nr"
 		},
+		"AzureSqlDatabaseModule12_connectionString": {
+			"value": ""
+		},
 		"LS_BLOB_AU_connectionString": {
 			"value": ""
 		},

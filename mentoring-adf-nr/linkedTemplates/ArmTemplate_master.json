@@ -7,6 +7,10 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "mentoring-adf-nr"
 		},
+		"AzureSqlDatabaseModule12_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AzureSqlDatabaseModule12'"
+		},
 		"LS_BLOB_AU_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'LS_BLOB_AU'"
@@ -66,6 +70,9 @@
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
 					},
+					"AzureSqlDatabaseModule12_connectionString": {
+						"value": "[parameters('AzureSqlDatabaseModule12_connectionString')]"
+					},
 					"LS_BLOB_AU_connectionString": {
 						"value": "[parameters('LS_BLOB_AU_connectionString')]"
 					},
@@ -83,9 +90,6 @@
 					},
 					"LS_SQL_Cinema_Tickets_properties_typeProperties_connectionString_secretName": {
 						"value": "[parameters('LS_SQL_Cinema_Tickets_properties_typeProperties_connectionString_secretName')]"
-					},
-					"LS_SQL_DataMart_properties_typeProperties_connectionString_secretName": {
-						"value": "[parameters('LS_SQL_DataMart_properties_typeProperties_connectionString_secretName')]"
 					}
 				}
 			},
@@ -104,6 +108,9 @@
 				"parameters": {
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
+					},
+					"LS_SQL_DataMart_properties_typeProperties_connectionString_secretName": {
+						"value": "[parameters('LS_SQL_DataMart_properties_typeProperties_connectionString_secretName')]"
 					},
 					"LS_SQL_Movies_properties_typeProperties_connectionString_secretName": {
 						"value": "[parameters('LS_SQL_Movies_properties_typeProperties_connectionString_secretName')]"
